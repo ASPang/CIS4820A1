@@ -74,9 +74,49 @@ extern void tree(float, float, float, float, float, float, int);
 	/* note that the world coordinates returned from getViewPosition()
 	   will be the negative value of the array indices */
 void collisionResponse() {
-
+    float x, y, z; //Viewpoint coordinates
+    float spaceBuffer = 0.2;   //VP buffer space
+    float objX, objY, objZ; //Object coordinate
+    
 	/* your collision code goes here */
+    gameWall();
+    
+    /*Determine if location falls upon an object*/
+    
 
+}
+
+void gameWall() {
+    float x, y, z; //Viewpoint coordinates
+    float spaceBuffer = 0.2;   //VP buffer space
+    float xMax, zMax, min;  //Game wall boarder
+    
+    /*Calculate the game wall with 0.2 space buffer and covert it to negative value*/
+    xMax = -(WORLDX - 0.2);
+    zMax = -(WORLDZ - 0.2);
+    min = -0.2;
+    
+    /*Get the VP current location*/
+    getViewPosition(&x, &y, &z);
+    printf("%f and z= %f -- xmax=%f zmax=%f min= %f\n", x, z, xMax, zMax, min);
+    /*Determine if VP is at the game wall*/
+    if (x >= min) {
+        //setViewPosition(x, downY, z);
+        printf("xmin boarder reached %f \n", x);    //TESTING!!!!!
+        setViewPosition(min + spaceBuffer, y, z);
+    }
+    else if (x <= xMax) {
+        printf("xMax boarder reached %f \n", x);    //TESTING!!!!!
+        setViewPosition(xMax - spaceBuffer, y, z);
+    }
+    else if (z >= min) {
+        printf("ymin boarder reached %f \n", z);    //TESTING!!!!!
+        setViewPosition(x, y, min + spaceBuffer);
+    }
+    else if (z <= zMax) {
+        printf("ymax boarder reached %f \n", z);    //TESTING!!!!!
+        setViewPosition(x, y, zMax - spaceBuffer);
+    }
 }
 
 
@@ -143,20 +183,21 @@ void update() {
       float x, z;
 
 	/* your code goes here */
-      //gravity(&downY);
-      getViewPosition(&x, &downY, &z);
-      //getOldViewPosition(&x, &downY, &z);
-
-
+      /*Determine if the fly control is on or off*/
+      if (flycontrol == 2) {
+         //gravity(&downY);
+         getViewPosition(&x, &downY, &z);
+         //getOldViewPosition(&x, &downY, &z);         
     
-      printf("%0.2f \n", downY);
-      downY += 0.05;	//TESTING!!!! -- SHOULD BE 0.1
+         printf("%0.2f \n", downY);
+         downY += 0.05;	//TESTING!!!! -- SHOULD BE 0.1
 
-      setViewPosition(x, downY, z);
+         setViewPosition(x, downY, z);
+      }
    }
 }
 
-void gravity(static float y) {
+void gravity(float y) {
    float x,z;   //Viewpoints 0=x,1=y,2=z
    //static float y;
    
