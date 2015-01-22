@@ -74,48 +74,83 @@ extern void tree(float, float, float, float, float, float, int);
 	/* note that the world coordinates returned from getViewPosition()
 	   will be the negative value of the array indices */
 void collisionResponse() {
+    int i;  //Loop counter
     float x, y, z; //Viewpoint coordinates
-    float spaceBuffer = 0.2;   //VP buffer space
-    float objX, objY, objZ; //Object coordinate
+    float oldX, oldY, oldZ; //Old viewpoint coordinates
+    float spaceBuffer = -0.2;   //VP buffer space
+    int objX, objY, objZ; //Object coordinate check #1
+    int objX2, objY2, objZ2; //Object coordinate check #2
     
 	/* your collision code goes here */
-    gameWall();
+    //gameWall();
     
-    /*Determine if location falls upon an object*/
+    /*Go through every object in game*/
+    /*for(i=0; i<displayCount; i++) {
+        /*Get object location*/
+        /*objX = displayList[i][0];
+        objY = displayList[i][1],
+        objZ = displayList[i][2];
+        */
+        /*Determine if location falls upon an object*/
+        /*if () {
+            
+        }*/
+    //}
     
+    /*Convert location to an integer*/
+    getViewPosition(&x, &y, &z);
+    
+    objX = (int)(x - spaceBuffer) * -1;
+    objY = (int)(y - spaceBuffer) * -1;
+    objZ = (int)(z - spaceBuffer) * -1;
+    
+    objX2 = (int)(x + spaceBuffer) * -1;
+    objY2 = (int)(y + spaceBuffer) * -1;
+    objZ2 = (int)(z + spaceBuffer) * -1;
+
+    
+    printf("current location = %f, %f, %f\n", x, y, z);     //TESTING!!!!!
+    printf("---obj = %d,%d,%d world=%d and possible world=%d\n", objX, objY, objZ, world[objX][objY][objZ], world[objX-1][objY-1][objZ-1]);
+    
+    if (world[objX][objY][objZ] != 0 || world[objX2][objY2][objZ2] != 0) {
+        printf("YOU'RE IN A CUBE \n");
+        getOldViewPosition(&oldX, &oldY, &oldZ);
+        
+        setViewPosition(oldX, oldY, oldZ);
+    }
 
 }
 
 void gameWall() {
     float x, y, z; //Viewpoint coordinates
-    float spaceBuffer = 0.2;   //VP buffer space
+    float spaceBuffer = 0.5;   //VP buffer space
     float xMax, zMax, min;  //Game wall boarder
     
     /*Calculate the game wall with 0.2 space buffer and covert it to negative value*/
-    xMax = -(WORLDX - 0.2);
-    zMax = -(WORLDZ - 0.2);
-    min = -0.2;
+    xMax = -(WORLDX - spaceBuffer);
+    zMax = -(WORLDZ - spaceBuffer);
+    min = -spaceBuffer;
     
     /*Get the VP current location*/
     getViewPosition(&x, &y, &z);
-    printf("%f and z= %f -- xmax=%f zmax=%f min= %f\n", x, z, xMax, zMax, min);
+    printf("%f and z= %f -- xmax=%f zmax=%f min= %f\n", x, z, xMax, zMax, min);     //TESTING!!!!!
     /*Determine if VP is at the game wall*/
     if (x >= min) {
         //setViewPosition(x, downY, z);
         printf("xmin boarder reached %f \n", x);    //TESTING!!!!!
-        setViewPosition(min + spaceBuffer, y, z);
+        setViewPosition(min, y, z);
     }
     else if (x <= xMax) {
         printf("xMax boarder reached %f \n", x);    //TESTING!!!!!
-        setViewPosition(xMax - spaceBuffer, y, z);
+        setViewPosition(xMax, y, z);
     }
     else if (z >= min) {
         printf("ymin boarder reached %f \n", z);    //TESTING!!!!!
-        setViewPosition(x, y, min + spaceBuffer);
+        setViewPosition(x, y, min);
     }
     else if (z <= zMax) {
         printf("ymax boarder reached %f \n", z);    //TESTING!!!!!
-        setViewPosition(x, y, zMax - spaceBuffer);
+        setViewPosition(x, y, zMax);
     }
 }
 
@@ -295,10 +330,15 @@ void grassLand() {
       
    for (x = 0; x < WORLDX; x++) {
       for (z = 0; z < WORLDZ; z++) {
-         world[x][y][z] = 1;
+         world[x][0][z] = 1;
       }
    }
 
+    for (x = 0; x < WORLDX; x++) {
+        for (z = 0; z < WORLDZ; z++) {
+            //world[x][49][z] = 3;
+        }
+    }
 }
 
 void waterFlow() {
@@ -321,12 +361,13 @@ void moutainTops() {
 void cloudFloat() {
     
    /*Generate the clouds*/
-   int x=50, z = 50, y = 45;      //Coordinates
+    int x=50, z = 50, y = 48;      //Coordinates
    int cloud = 5;
 
-   world[x][80][50] = cloud;
-   world[x+1][80][50] = cloud;
-   world[x+1][80][50] = cloud;
+   world[x][y][50] = cloud;
+   world[x+1][y][50] = cloud;
+   world[x+1][y][50] = cloud;
+   world[0][y][50] = cloud;
 
 }
 
