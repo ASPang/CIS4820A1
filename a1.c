@@ -79,10 +79,11 @@ void collisionResponse() {
     float oldX, oldY, oldZ; //Old viewpoint coordinates
     float spaceBuffer = -0.2;   //VP buffer space
     int objX, objY, objZ; //Object coordinate check #1
-    int objX2, objY2, objZ2; //Object coordinate check #2
+    int objX2 = 0, objY2 = 0, objZ2 = 0; //Object coordinate check #2
     
 	/* your collision code goes here */
     //gameWall();
+    
     
     /*Go through every object in game*/
     /*for(i=0; i<displayCount; i++) {
@@ -104,20 +105,47 @@ void collisionResponse() {
     objY = (int)(y - spaceBuffer) * -1;
     objZ = (int)(z - spaceBuffer) * -1;
     
-    objX2 = (int)(x + spaceBuffer) * -1;
-    objY2 = (int)(y + spaceBuffer) * -1;
-    objZ2 = (int)(z + spaceBuffer) * -1;
+    //objX2 = (int)(x + spaceBuffer) * -1;
+    //objY2 = (int)(y + spaceBuffer) * -1;
+    //objZ2 = (int)(z + spaceBuffer) * -1;
 
     
-    printf("current location = %f, %f, %f\n", x, y, z);     //TESTING!!!!!
-    printf("---obj = %d,%d,%d world=%d and possible world=%d\n", objX, objY, objZ, world[objX][objY][objZ], world[objX-1][objY-1][objZ-1]);
+    printf("current location = %f, %f, %f  collsionResponse()\n", x, y, z);     //TESTING!!!!!
+    printf("---obj = %d,%d,%d ---obj2 obj = %d,%d,%d --- world=%d and possible world=%d\n", objX, objY, objZ, objX2, objY2, objZ2, world[objX][objY][objZ], world[objX2][objY2][objZ2]);
+
     
-    if (world[objX][objY][objZ] != 0 || world[objX2][objY2][objZ2] != 0) {
-        printf("YOU'RE IN A CUBE \n");
+    if (world[objX][(int)y*(-1)][objZ] != 0) { // || world[objX2][objY2][objZ2] != 0) {
+        printf("YOU'RE IN A CUBE collsionResponse\n");
+        //getOldViewPosition(&oldX, &oldY, &oldZ);
+        
+        /*if (objY == 0 && flycontrol == 2) {
+            setViewPosition(x, -1.2, z);
+        }
+        else if (flycontrol == 2) {
+            setViewPosition(x, oldY - 0.12, z);
+            
+        }
+        else {*/
+            //setViewPosition(oldX, oldY, oldZ);
+        //}
+        
         getOldViewPosition(&oldX, &oldY, &oldZ);
+        
         
         setViewPosition(oldX, oldY, oldZ);
     }
+    
+    getViewPosition(&x, &y, &z);
+    
+    objX = (int)(x - spaceBuffer) * -1;
+    objY = (int)(y - spaceBuffer) * -1;
+    objZ = (int)(z - spaceBuffer) * -1;
+    
+    
+    if (world[objX][objY][objZ] != 0) {
+        
+    }
+    
 
 }
 
@@ -215,25 +243,77 @@ void update() {
     /* end testworld animation */
    } else {
       static float downY;
-      float x, z;
+      float x, y, z;
 
 	/* your code goes here */
       /*Determine if the fly control is on or off*/
-      if (flycontrol == 2) {
+      if (flycontrol == 0) {
          //gravity(&downY);
          getViewPosition(&x, &downY, &z);
          //getOldViewPosition(&x, &downY, &z);         
     
-         printf("%0.2f \n", downY);
-         downY += 0.05;	//TESTING!!!! -- SHOULD BE 0.1
+         //printf("%0.2f \n", downY);
+         //downY += 0.05;	//TESTING!!!! -- SHOULD BE 0.1
 
-         setViewPosition(x, downY, z);
+         
+          
+         //collisionResponse();
+          
+          
+          float oldX, oldY, oldZ; //Old viewpoint coordinates
+          float spaceBuffer = -0.2;   //VP buffer space
+          int objX, objY, objZ; //Object coordinate check #1
+          
+          /*Convert location to an integer*/
+          getViewPosition(&x, &y, &z);
+          
+          objX = (int)(x - spaceBuffer) * -1;
+          objY = (int)(y - spaceBuffer) * -1;
+          objZ = (int)(z - spaceBuffer) * -1;
+          
+          //objX2 = (int)(x + spaceBuffer) * -1;
+          //objY2 = (int)(y + spaceBuffer) * -1;
+          //objZ2 = (int)(z + spaceBuffer) * -1;
+          
+          
+          //printf("current location = %f, %f, %f\n", x, y, z);     //TESTING!!!!!
+          //printf("---obj = %d,%d,%d ---obj2 obj = %d,%d,%d --- world=%d and possible world=%d\n", objX, objY, objZ, objX2, objY2, objZ2, world[objX][objY][objZ], world[objX2][objY2][objZ2]);
+          
+          
+          if (world[objX][objY][objZ] == 0) { // || world[objX2][objY2][objZ2] != 0) {
+              /*printf("YOU'RE IN A CUBE \n");
+              getOldViewPosition(&oldX, &oldY, &oldZ);
+              
+              if (objY == 0 && flycontrol == 1) {
+                  setViewPosition(x, -1.2, z);
+              }
+              else if (flycontrol == 1) {
+                  setViewPosition(x, oldY - 0.12, z);
+                  
+              }
+              else {
+                  setViewPosition(oldX, oldY, oldZ);
+              }*/
+              printf("current location = %f, %f, %f\n", x, y, z);     //TESTING!!!!!
+              setViewPosition(x, y + 0.1, z);
+          }
+          else {
+              //setViewPosition(x, downY + 0.1, z);
+              //getOldViewPosition(&oldX, &oldY, &oldZ);
+              //setViewPosition(oldX, oldY, oldZ);
+          }
+          
       }
+       
+       if (flycontrol == 2) {
+           gravity();
+       }
    }
 }
 
 void gravity(float y) {
    float x,z;   //Viewpoints 0=x,1=y,2=z
+    float downY;
    //static float y;
    
    /*Returns the position where the viewpoint is currently*/
@@ -248,7 +328,15 @@ void gravity(float y) {
 
    //printf("%0.2f y= %0.2f, z=%0.2f \n", x, y, z);
    //*y -= 1.0;
-
+    
+    
+    getViewPosition(&x, &downY, &z);
+    
+    downY += 0.05;	//TESTING!!!! -- SHOULD BE 0.1
+    
+    setViewPosition(x, downY, z);
+    
+    collisionResponse();
 }
 
 
@@ -350,12 +438,26 @@ void waterFlow() {
 }
 
 void moutainTops() {
-   int x=50, z = 50, y = 0;      //Coordinates
-   int mount = 4;
+   int x=50, z = 50, y = 1;      //Coordinates
+   int mount = 3;
 
-   world[x][y][z] = mount;
+   /*world[x][y][z] = mount;
    world[x+1][y][z] = mount;
-   world[x+1][y][z] = mount;
+   world[x+2][y][z] = mount;
+    world[x-1][y][z] = mount;
+    world[x-2][y][z] = mount;
+    
+    world[x][y][z] = mount;
+    world[x][y][z-1] = mount;
+    world[x][y][z-2] = mount;
+    world[x][y][z+1] = mount;
+    world[x][y][z+2] = mount;
+    
+    
+    world[x+1][y][z-1] = mount;
+    world[x+2][y][z-2] = mount;
+    world[x-1][y][z+1] = mount;*/
+    world[x-2][y][z+2] = mount;
 }
 
 void cloudFloat() {
