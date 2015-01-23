@@ -3,6 +3,8 @@
 #include <OpenGL/glu.h>
 #include <GLUT/glut.h>
 
+#include <time.h>
+
         /* world size and storage array */
 #define WORLDX 100
 #define WORLDY 50
@@ -10,4 +12,3 @@
 GLubyte  world[WORLDX][WORLDY][WORLDZ];
 
 #define MAX_DISPLAY_LIST 500000
-
