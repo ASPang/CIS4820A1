@@ -82,21 +82,8 @@ void collisionResponse() {
     int objX2 = 0, objY2 = 0, objZ2 = 0; //Object coordinate check #2
     
 	/* your collision code goes here */
-    //gameWall();
+    gameWall(); //Determine if the player is at the edge of the world
     
-    
-    /*Go through every object in game*/
-    /*for(i=0; i<displayCount; i++) {
-        /*Get object location*/
-        /*objX = displayList[i][0];
-        objY = displayList[i][1],
-        objZ = displayList[i][2];
-        */
-        /*Determine if location falls upon an object*/
-        /*if () {
-            
-        }*/
-    //}
     
     /*Convert location to an integer*/
     getViewPosition(&x, &y, &z);
@@ -116,37 +103,9 @@ void collisionResponse() {
     
     if (world[objX][(int)y*(-1)][objZ] != 0) { // || world[objX2][objY2][objZ2] != 0) {
         printf("YOU'RE IN A CUBE collsionResponse\n");
-        //getOldViewPosition(&oldX, &oldY, &oldZ);
-        
-        /*if (objY == 0 && flycontrol == 2) {
-            setViewPosition(x, -1.2, z);
-        }
-        else if (flycontrol == 2) {
-            setViewPosition(x, oldY - 0.12, z);
-            
-        }
-        else {*/
-            //setViewPosition(oldX, oldY, oldZ);
-        //}
-        
         getOldViewPosition(&oldX, &oldY, &oldZ);
-        
-        
         setViewPosition(oldX, oldY, oldZ);
     }
-    
-    getViewPosition(&x, &y, &z);
-    
-    objX = (int)(x - spaceBuffer) * -1;
-    objY = (int)(y - spaceBuffer) * -1;
-    objZ = (int)(z - spaceBuffer) * -1;
-    
-    
-    if (world[objX][objY][objZ] != 0) {
-        
-    }
-    
-
 }
 
 void gameWall() {
@@ -242,101 +201,32 @@ void update() {
       if (mob1ry > 360.0) mob1ry -= 360.0;
     /* end testworld animation */
    } else {
-      static float downY;
-      float x, y, z;
-
 	/* your code goes here */
       /*Determine if the fly control is on or off*/
       if (flycontrol == 0) {
-         //gravity(&downY);
-         getViewPosition(&x, &downY, &z);
-         //getOldViewPosition(&x, &downY, &z);         
-    
-         //printf("%0.2f \n", downY);
-         //downY += 0.05;	//TESTING!!!! -- SHOULD BE 0.1
-
+         gravity();
          
-          
-         //collisionResponse();
-          
-          
-          float oldX, oldY, oldZ; //Old viewpoint coordinates
-          float spaceBuffer = -0.2;   //VP buffer space
-          int objX, objY, objZ; //Object coordinate check #1
-          
-          /*Convert location to an integer*/
-          getViewPosition(&x, &y, &z);
-          
-          objX = (int)(x - spaceBuffer) * -1;
-          objY = (int)(y - spaceBuffer) * -1;
-          objZ = (int)(z - spaceBuffer) * -1;
-          
-          //objX2 = (int)(x + spaceBuffer) * -1;
-          //objY2 = (int)(y + spaceBuffer) * -1;
-          //objZ2 = (int)(z + spaceBuffer) * -1;
-          
-          
-          //printf("current location = %f, %f, %f\n", x, y, z);     //TESTING!!!!!
-          //printf("---obj = %d,%d,%d ---obj2 obj = %d,%d,%d --- world=%d and possible world=%d\n", objX, objY, objZ, objX2, objY2, objZ2, world[objX][objY][objZ], world[objX2][objY2][objZ2]);
-          
-          
-          if (world[objX][objY][objZ] == 0) { // || world[objX2][objY2][objZ2] != 0) {
-              /*printf("YOU'RE IN A CUBE \n");
-              getOldViewPosition(&oldX, &oldY, &oldZ);
-              
-              if (objY == 0 && flycontrol == 1) {
-                  setViewPosition(x, -1.2, z);
-              }
-              else if (flycontrol == 1) {
-                  setViewPosition(x, oldY - 0.12, z);
-                  
-              }
-              else {
-                  setViewPosition(oldX, oldY, oldZ);
-              }*/
-              printf("current location = %f, %f, %f\n", x, y, z);     //TESTING!!!!!
-              setViewPosition(x, y + 0.1, z);
-          }
-          else {
-              //setViewPosition(x, downY + 0.1, z);
-              //getOldViewPosition(&oldX, &oldY, &oldZ);
-              //setViewPosition(oldX, oldY, oldZ);
-          }
-          
-      }
-       
-       if (flycontrol == 2) {
-           gravity();
-       }
+      }       
    }
 }
 
-void gravity(float y) {
-   float x,z;   //Viewpoints 0=x,1=y,2=z
-    float downY;
-   //static float y;
-   
-   /*Returns the position where the viewpoint is currently*/
-   //getOldViewPosition(&x, &y, &z);
-   //getViewPosition(&x, y, &z);
-   //&y -= 1.0;
-
-   /*Sets the position where the viewpoint will move to on the next step.*/
-   /*Numbers taken from the world array need to be made negative before they
-     are used with setViewPosition.*/
-   //setViewPosition(x, y, z);
-
-   //printf("%0.2f y= %0.2f, z=%0.2f \n", x, y, z);
-   //*y -= 1.0;
+void gravity() {
+   float x, y, z;   //Viewpoints 0=x,1=y,2=z    
+    float oldX, oldY, oldZ; //Old viewpoint coordinates
+    float spaceBuffer = -0.2;   //VP buffer space
+    int objX, objY, objZ; //Object coordinate check #1
     
+    /*Convert location to an integer*/
+    getViewPosition(&x, &y, &z);
     
-    getViewPosition(&x, &downY, &z);
+    objX = (int)(x - spaceBuffer) * -1;
+    objY = (int)(y - spaceBuffer) * -1;
+    objZ = (int)(z - spaceBuffer) * -1;
     
-    downY += 0.05;	//TESTING!!!! -- SHOULD BE 0.1
-    
-    setViewPosition(x, downY, z);
-    
-    collisionResponse();
+    if (world[objX][objY][objZ] == 0) {
+        printf("fall current location = %f, %f, %f\n", x, y, z);     //TESTING!!!!!
+        setViewPosition(x, y + 0.1, z);
+    }
 }
 
 
@@ -395,10 +285,10 @@ int i, j, k;
    } else {
 
 	/* your code to build the world goes here */
+       //static int cloudAry[][];
       landscape();
 
    }
-
 
 	/* starts the graphics processing loop */
 	/* code after this will not run until the program exits */
@@ -475,4 +365,8 @@ void cloudFloat() {
 
 void cloudShape() {
    /*Create the shape of the cloud*/
+}
+
+void moveCloud() {
+    /*Move the cloud*/
 }
