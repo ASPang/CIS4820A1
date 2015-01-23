@@ -207,8 +207,14 @@ void update() {
          gravity();
          
       } 
-
+      
       /*Move the clouds*/
+      //static int resetTime = 1;
+      //int diff;
+      //int milSec = 1000;    //Milliseconds
+
+      //static clock_t start, end;
+
       moveCloud();      
    }
 }
@@ -380,10 +386,10 @@ void cloudShape() {
 
 }
 
-
-/*Move the clouds in the game every 0.35 seconds*/
 void moveCloud() {
+    /*Move the cloud*/
     static int resetTime = 1;
+    //static time_t start, end; // return current time in seconds
     int diff;
     int milsec = 10000;    //Milliseconds
 
@@ -392,25 +398,42 @@ void moveCloud() {
 
     /*Determine if timer needs to be reset*/
     if (resetTime == 1) {
-        /*Reset Timer*/        
+        /*Reset Timer*/
+        //time(&start);	//Get the start time
+        
         start = clock();     //Get the current time
-        resetTime = 0;       //Set timer flag
-              
+
+        diff = (int)(start);
+
+        printf("Start time = %d\n", diff);
+        resetTime = 0;
+                
     }
     else if (resetTime == 0) {
-        /*Determine number of seconds elapsed*/
+        /*Determine if 3 seconds have elapsed*/
         end = clock();
-        diff = (int)((end - start) / milsec);
 
-        /*Determine if 0.35 seconds have passed*/
+        /*diff = (int)(start);
+        printf("Start time = %d\n", diff);
+
+        diff = (int)(end);
+        printf("end time= %d\n", diff); */
+
+
+        diff = (int)((end - start) / milsec);
+        //printf("diff=%d\n", diff);
+
+        /*Determine if three seconds have passed*/
         if (diff >= 35) {
-            updateCloudLoc();   //Update cloud location
-            resetTime = 1;   //Reset timer flag
+            //printf("3 second has passed\n");
+            updateCloudLoc();
+            resetTime = 1;
         }
     }
+   
+    //clock_t start = clock(), diff
 }
 
-/*Locate and update the cloud location*/
 void updateCloudLoc() {
     int x, y, z;   //Stores the location 
     int cloudLine = 47;   //The height of where the clouds will be at
@@ -419,7 +442,10 @@ void updateCloudLoc() {
     for (y = cloudLine; y < WORLDY-1; y++) {
         for (z = WORLDZ - 1; z >= 0; z--) {
             for (x = WORLDX - 1; x >= 0; x--) {
+                printf("location in array %d, %d, %d value=%d\n", x, y, z, world[x][y][z]);
+
                 if (world[x][y][z] == 5) {
+                    printf("Found a cloud at %d, %d, %d \n", x, y, z);
                     /*Remove old cloud*/
                     world[x][y][z] = 0;
 
