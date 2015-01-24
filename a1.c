@@ -378,12 +378,15 @@ void cloudShape() {
                       3,2,  3,1,  3,-3,  1,-4,  
                       4,1};
 
-   //arySize = (int)(sizeof(cloudType1)/sizeof(int));
+   arySize = (int)(sizeof(cloudType1)/sizeof(int));
    createCloud(50,47,47, cloudType1, arySize);
    createCloud(15,47,15, cloudType1, arySize);
    createCloud(27,48,32, cloudType1, arySize);
    createCloud(80,48,22, cloudType1, arySize);
    createCloud(55,48,8, cloudType1, arySize);
+
+
+
 
    int cloudType2[] =  {1,1,  1,2,  1,3,  1,5,  1,6,  1,7,
                        2,2,  2,3,  2,4, 2,6,  2,7,  2,8,
@@ -391,17 +394,14 @@ void cloudShape() {
                        4,4,  4,5,  4,6,  4,9,
                        5,3,  5,4,  5,6,  5,7,  5,8};
 
-   //arySize = (int)(sizeof(cloudType2)/sizeof(int));
+   arySize = (int)(sizeof(cloudType2)/sizeof(int));
    createCloud(20,47,7, cloudType2, arySize);
    createCloud(60,47,48, cloudType2, arySize);
    createCloud(20,47,60, cloudType2, arySize);
-   createCloud(45,48,37, cloudType2, arySize);
    createCloud(30,48,31, cloudType2, arySize);
    createCloud(20,48,7, cloudType2, arySize);
    createCloud(45,48,37, cloudType2, arySize);
    createCloud(25,48,25, cloudType2, arySize);
-   createCloud(75,47,70, cloudType2, arySize);
-
 
    int cloudType3[] =  {1,1,  1,2,  1,3,  1,5,  1,6,  1,7,
                        2,2,  2,3,  2,4, 2,6,  2,7,  2,8,
@@ -413,7 +413,7 @@ void cloudShape() {
                        8,6,  8,7,  8,9,  8,10,
                        9,1,  9,3,  9,6,  9,7,  9,9};
 
-   //arySize = (int)(sizeof(cloudType3)/sizeof(int));
+   arySize = (int)(sizeof(cloudType3)/sizeof(int));
    createCloud(30,47,57, cloudType3, arySize);
    createCloud(38,48,21, cloudType3, arySize);
    createCloud(21,48,80, cloudType3, arySize);
@@ -421,7 +421,11 @@ void cloudShape() {
    createCloud(10,48,10, cloudType3, arySize);
    createCloud(21,47,20, cloudType3, arySize);
 
-   //printf("Size of cloud 1 in cloudshape= %d \n", (int)(sizeof(cloudType1)/sizeof(int)));   
+
+
+   printf("Size of cloud 1 in cloudshape= %d \n", (int)(sizeof(cloudType1)/sizeof(int)));
+
+   
 }
 
 void createCloud(int x, int y, int z, int cloud[], int arySize) {
