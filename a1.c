@@ -227,7 +227,7 @@ void gravity() {
     objZ = (int)(z - spaceBuffer) * -1;
     
     if (world[objX][objY][objZ] == 0) {
-        setViewPosition(x, y + 0.1, z);
+        setViewPosition(x, y + 0.1, z);   //TESTING - Gravity should be 0.1
     }
 }
 
@@ -287,7 +287,7 @@ int i, j, k;
    } else {
 
 	/* your code to build the world goes here */
-       //static int cloudAry[][];
+      /*Creates the game landscape*/
       landscape();
 
    }
@@ -302,7 +302,7 @@ void landscape() {
    grassLand();
    waterFlow();
    moutainTops();
-   cloudFloat();
+   cloudFloat(); 
 }
 
 void grassLand() {
@@ -352,9 +352,9 @@ void moutainTops() {
     world[x-2][y][z+2] = mount;
 
 
-   int i = 0;
-         perlinValue();
-   
+
+    int i = 0;
+    perlinValue();   
 
 }
 
@@ -363,116 +363,104 @@ void moutainTops() {
  * REFERENCE: http://www.angelcode.com/dev/perlin/perlin.html
  */
 void perlinValue() {
-float x, y, z;
-int i, j, p[WORLDX], nSwap;
-float gx[WORLDX], gy[WORLDX];
+   int x, z;
+   int i, j, p[WORLDX], nSwap;
+   float gx[WORLDX], gy[WORLDX];
 
-int SIZE = WORLDX;
+   int SIZE = WORLDX;
 
-srand(time(NULL));
+   srand(time(NULL));
 
-// Initialize the permutation table
-for(i = 0; i < SIZE; i++)
-  p[i] = i;
+   // Initialize the permutation table
+   for(i = 0; i < SIZE; i++)
+      p[i] = i;
 
-for(i = 0; i < SIZE; i++)
-{
-  j = rand() % SIZE;
+   for(i = 0; i < SIZE; i++){
+      j = rand() % SIZE;
 
-  nSwap = p[i];
-  p[i]  = p[j];
-  p[j]  = nSwap;
-}
-	
-// Generate the gradient look-up tables
-for(i = 0; i < SIZE; i++)
-{
-  gx[i] = (float)(rand())/(RAND_MAX/2) - 1.0f; 
-  gy[i] = (float)(rand())/(RAND_MAX/2) - 1.0f;
-}
+      nSwap = p[i];
+      p[i]  = p[j];
+      p[j]  = nSwap;
+   }
+     
+   // Generate the gradient look-up tables
+   for(i = 0; i < SIZE; i++) {
+      gx[i] = (float)(rand())/(RAND_MAX/2) - 1.0f; 
+      gy[i] = (float)(rand())/(RAND_MAX/2) - 1.0f;
+   }
 
-//y = 0.515152;
-//z = 0;
+   float perX, perZ;
 
-float perX, perZ;
+    for (x = 0; x < (WORLDX - 1); x++) {
 
-for (x = 0; x < (WORLDX - 1); x++) {
+      for (z = 0; z < (WORLDZ - 1); z++) {
+         perX = x / 13.5; //(x / 33.0); // / 23;
+         perZ = z / 13.5; //(z / 33.0); // 23;
 
-for (z = 0; z < (WORLDZ - 1); z++) {
+         //x /= 20.0;
+         //z /= 20.0;
 
-perX = x / 15; //(x / 33.0); // / 23;
-perZ = z / 15; //(z / 33.0); // 23;
+         // Compute the integer positions of the four surrounding points
+         int qx0 = (int)floorf(perX);
+         int qx1 = qx0 + 1;
 
-//x /= 20.0;
-//z /= 20.0;
+         int qy0 = (int)floorf(perZ);
+         int qy1 = qy0 + 1;
 
-// Compute the integer positions of the four surrounding points
-int qx0 = (int)floorf(perX);
-int qx1 = qx0 + 1;
+         // Permutate values to get indices to use with the gradient look-up tables
+         int q00 = p[(qy0 + p[qx0 % SIZE]) % SIZE];
+         int q01 = p[(qy0 + p[qx1 % SIZE]) % SIZE];
 
-int qy0 = (int)floorf(perZ);
-int qy1 = qy0 + 1;
+         int q10 = p[(qy1 + p[qx0 % SIZE]) % SIZE];
+         int q11 = p[(qy1 + p[qx1 % SIZE]) % SIZE];
 
-printf("qx=%d, qy=%d \n", qx1, qy1);
+         // Computing vectors from the four points to the input point
+         float tx0 = perX - floorf(perX);
+         float tx1 = tx0 - 1;
 
-// Permutate values to get indices to use with the gradient look-up tables
-int q00 = p[(qy0 + p[qx0 % SIZE]) % SIZE];
-int q01 = p[(qy0 + p[qx1 % SIZE]) % SIZE];
+         float ty0 = perZ - floorf(perZ);
+         float ty1 = ty0 - 1;
 
-int q10 = p[(qy1 + p[qx0 % SIZE]) % SIZE];
-int q11 = p[(qy1 + p[qx1 % SIZE]) % SIZE];
+         // Compute the dot-product between the vectors and the gradients
+         float v00 = gx[q00]*tx0 + gy[q00]*ty0;
+         float v01 = gx[q01]*tx1 + gy[q01]*ty0;
 
-printf("q00=%d,%d, q10=%d,%d \n", q00, q01, q10, q11);
+         float v10 = gx[q10]*tx0 + gy[q10]*ty1;
+         float v11 = gx[q11]*tx1 + gy[q11]*ty1;
 
+         // Do the bi-cubic interpolation to get the final value
+         float wx = (3 - 2*tx0)*tx0*tx0;
+         float v0 = v00 - wx*(v00 - v01);
+         float v1 = v10 - wx*(v10 - v11);
 
-// Computing vectors from the four points to the input point
-float tx0 = perX - floorf(perX);
-float tx1 = tx0 - 1;
-
-float ty0 = perZ - floorf(perZ);
-float ty1 = ty0 - 1;
-
-printf("tx=%f,%f, ty=%f,%f \n", tx0, tx1, ty0, ty1);
-
-
-// Compute the dot-product between the vectors and the gradients
-float v00 = gx[q00]*tx0 + gy[q00]*ty0;
-printf("gx=%f, gy=%f \n", gx[q00], gy[q00]);
-
-
-float v01 = gx[q01]*tx1 + gy[q01]*ty0;
-
-float v10 = gx[q10]*tx0 + gy[q10]*ty1;
-float v11 = gx[q11]*tx1 + gy[q11]*ty1;
-
-printf("v00=%f,%f, v10=%f,%f \n", v00, v01, v10, v11);
-
-
-
-// Do the bi-cubic interpolation to get the final value
-float wx = (3 - 2*tx0)*tx0*tx0;
-float v0 = v00 - wx*(v00 - v01);
-float v1 = v10 - wx*(v10 - v11);
-
-float wy = (3 - 2*ty0)*ty0*ty0;
-float v = v0 - wy*(v0 - v1);
-
-printf("wx=%f, v0=%f,%f wy=%f, v=%f \n", wx, v0, v1, wy, v);
-
-v = (10 - v * 11);
-
-printf("height = %f \n", v);
-
-//z++;
-
-//x *= 20.0;
-//z *= 20.0;
-world[(int)x][(int)v][(int)z] = 1;
-
-
-}
+         float wy = (3 - 2*ty0)*ty0*ty0;
+         float v = v0 - wy*(v0 - v1);
+         
+         /*Height*/
+         v = (10 - v * 21);
+         
+         /*Fill the mountain*/
+         fillMountain(x, (int)v, z);
+      }
+   }
 }
 
+/*Fills interior of the mountain*/
+void fillMountain(int x, int y, int z) {
+   int i, green = 1;
+   
+   /*Prevent the mountain from spawning in the sky*/
+   if (y > 47 || y < 0) {
+      y = 0;
+   }
+   
+   /*Top of the mountain terrain*/
+   world[x][y][z] = 1;
+   
+   /*Build the mountain bottom up*/
+   for (i = 1; i < y; i++) {
+      world[x][i][z] = 1;
+   }
 }
 
 void cloudFloat() { 
@@ -485,7 +473,6 @@ void cloudFloat() {
    world[x+1][y][50] = cloud;
    world[0][y][50] = cloud;
 
-   
    cloudShape();
 }
 
@@ -542,6 +529,8 @@ void cloudShape() {
    createCloud(21,47,20, cloudType3, arySize);   
 }
 
+
+/*Puts the clouds into the world 3D array*/
 void createCloud(int x, int y, int z, int cloud[], int arySize) {
    int cloudX, cloudZ;   //Cloud information
    int i = 0;
