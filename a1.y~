@@ -392,25 +392,17 @@ for(i = 0; i < SIZE; i++)
 }
 
 //y = 0.515152;
-//z = 0;
+y = 1;
 
-float perX, perZ;
+for (x = 1; x < 10; x++) {
 
-for (x = 0; x < (WORLDX - 1); x++) {
-
-for (z = 0; z < (WORLDZ - 1); z++) {
-
-perX = x / 15; //(x / 33.0); // / 23;
-perZ = z / 15; //(z / 33.0); // 23;
-
-//x /= 20.0;
-//z /= 20.0;
-
+x += 0.5;
+y += 0.5;
 // Compute the integer positions of the four surrounding points
-int qx0 = (int)floorf(perX);
+int qx0 = (int)floorf(x);
 int qx1 = qx0 + 1;
 
-int qy0 = (int)floorf(perZ);
+int qy0 = (int)floorf(y);
 int qy1 = qy0 + 1;
 
 printf("qx=%d, qy=%d \n", qx1, qy1);
@@ -426,10 +418,10 @@ printf("q00=%d,%d, q10=%d,%d \n", q00, q01, q10, q11);
 
 
 // Computing vectors from the four points to the input point
-float tx0 = perX - floorf(perX);
+float tx0 = x - floorf(x);
 float tx1 = tx0 - 1;
 
-float ty0 = perZ - floorf(perZ);
+float ty0 = y - floorf(y);
 float ty1 = ty0 - 1;
 
 printf("tx=%f,%f, ty=%f,%f \n", tx0, tx1, ty0, ty1);
@@ -459,23 +451,21 @@ float v = v0 - wy*(v0 - v1);
 
 printf("wx=%f, v0=%f,%f wy=%f, v=%f \n", wx, v0, v1, wy, v);
 
-v = (10 - v * 11);
+v = (v * 15 -20)*(-1);
 
 printf("height = %f \n", v);
 
-//z++;
-
-//x *= 20.0;
-//z *= 20.0;
-world[(int)x][(int)v][(int)z] = 1;
+y++;
+x -= 0.5;
+y -= 0.5;
 
 
-}
 }
 
 }
 
-void cloudFloat() { 
+void cloudFloat() {
+    
    /*Generate the clouds*/
     int x=50, z = 50, y = 48;      //Coordinates
    int cloud = 5;
