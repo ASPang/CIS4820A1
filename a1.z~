@@ -227,6 +227,7 @@ void gravity() {
     objZ = (int)(z - spaceBuffer) * -1;
     
     if (world[objX][objY][objZ] == 0) {
+        printf("fall current location = %f, %f, %f\n", x, y, z);     //TESTING!!!!!
         setViewPosition(x, y + 0.1, z);
     }
 }
@@ -350,118 +351,6 @@ void moutainTops() {
     world[x+2][y][z-2] = mount;
     world[x-1][y][z+1] = mount;*/
     world[x-2][y][z+2] = mount;
-
-
-   int i = 0;
-         perlinValue();
-   
-
-}
-
-
-/*
- * REFERENCE: http://www.angelcode.com/dev/perlin/perlin.html
- */
-void perlinValue() {
-float x, y, z;
-int i, j, p[WORLDX], nSwap;
-float gx[WORLDX], gy[WORLDX];
-
-int SIZE = WORLDX;
-
-srand(time(NULL));
-
-// Initialize the permutation table
-for(i = 0; i < SIZE; i++)
-  p[i] = i;
-
-for(i = 0; i < SIZE; i++)
-{
-  j = rand() % SIZE;
-
-  nSwap = p[i];
-  p[i]  = p[j];
-  p[j]  = nSwap;
-}
-	
-// Generate the gradient look-up tables
-for(i = 0; i < SIZE; i++)
-{
-  gx[i] = (float)(rand())/(RAND_MAX/2) - 1.0f; 
-  gy[i] = (float)(rand())/(RAND_MAX/2) - 1.0f;
-}
-
-//y = 0.515152;
-y = 1;
-
-for (x = 1; x < 10; x++) {
-
-x += 0.5;
-y += 0.5;
-// Compute the integer positions of the four surrounding points
-int qx0 = (int)floorf(x);
-int qx1 = qx0 + 1;
-
-int qy0 = (int)floorf(y);
-int qy1 = qy0 + 1;
-
-printf("qx=%d, qy=%d \n", qx1, qy1);
-
-// Permutate values to get indices to use with the gradient look-up tables
-int q00 = p[(qy0 + p[qx0 % SIZE]) % SIZE];
-int q01 = p[(qy0 + p[qx1 % SIZE]) % SIZE];
-
-int q10 = p[(qy1 + p[qx0 % SIZE]) % SIZE];
-int q11 = p[(qy1 + p[qx1 % SIZE]) % SIZE];
-
-printf("q00=%d,%d, q10=%d,%d \n", q00, q01, q10, q11);
-
-
-// Computing vectors from the four points to the input point
-float tx0 = x - floorf(x);
-float tx1 = tx0 - 1;
-
-float ty0 = y - floorf(y);
-float ty1 = ty0 - 1;
-
-printf("tx=%f,%f, ty=%f,%f \n", tx0, tx1, ty0, ty1);
-
-
-// Compute the dot-product between the vectors and the gradients
-float v00 = gx[q00]*tx0 + gy[q00]*ty0;
-printf("gx=%f, gy=%f \n", gx[q00], gy[q00]);
-
-
-float v01 = gx[q01]*tx1 + gy[q01]*ty0;
-
-float v10 = gx[q10]*tx0 + gy[q10]*ty1;
-float v11 = gx[q11]*tx1 + gy[q11]*ty1;
-
-printf("v00=%f,%f, v10=%f,%f \n", v00, v01, v10, v11);
-
-
-
-// Do the bi-cubic interpolation to get the final value
-float wx = (3 - 2*tx0)*tx0*tx0;
-float v0 = v00 - wx*(v00 - v01);
-float v1 = v10 - wx*(v10 - v11);
-
-float wy = (3 - 2*ty0)*ty0*ty0;
-float v = v0 - wy*(v0 - v1);
-
-printf("wx=%f, v0=%f,%f wy=%f, v=%f \n", wx, v0, v1, wy, v);
-
-v = (v * 15 -20)*(-1);
-
-printf("height = %f \n", v);
-
-y++;
-x -= 0.5;
-y -= 0.5;
-
-
-}
-
 }
 
 void cloudFloat() {
@@ -496,7 +385,9 @@ void cloudShape() {
    createCloud(80,48,22, cloudType1, arySize);
    createCloud(55,48,8, cloudType1, arySize);
 
-   /*Cloud type #2*/
+
+
+
    int cloudType2[] =  {1,1,  1,2,  1,3,  1,5,  1,6,  1,7,
                        2,2,  2,3,  2,4, 2,6,  2,7,  2,8,
                        3,3,  3,4,  3,5,  3,6,  3,7,
@@ -512,7 +403,6 @@ void cloudShape() {
    createCloud(45,48,37, cloudType2, arySize);
    createCloud(25,48,25, cloudType2, arySize);
 
-   /*Cloud type #3*/
    int cloudType3[] =  {1,1,  1,2,  1,3,  1,5,  1,6,  1,7,
                        2,2,  2,3,  2,4, 2,6,  2,7,  2,8,
                        3,3,  3,4,  3,5,  3,6,  3,7,
@@ -529,12 +419,22 @@ void cloudShape() {
    createCloud(21,48,80, cloudType3, arySize);
    createCloud(10,47,80, cloudType3, arySize);
    createCloud(10,48,10, cloudType3, arySize);
-   createCloud(21,47,20, cloudType3, arySize);   
+   createCloud(21,47,20, cloudType3, arySize);
+
+
+
+   printf("Size of cloud 1 in cloudshape= %d \n", (int)(sizeof(cloudType1)/sizeof(int)));
+
+   
 }
 
 void createCloud(int x, int y, int z, int cloud[], int arySize) {
    int cloudX, cloudZ;   //Cloud information
    int i = 0;
+
+   //arySize = (int)(sizeof(cloud));
+
+   printf("Size of cloud = %d \n", arySize);
 
    world[x][y][z] = 5;
 
@@ -547,7 +447,9 @@ void createCloud(int x, int y, int z, int cloud[], int arySize) {
       cloudX = x + cloud[i];
       cloudZ = z + cloud[i+1];
       world[cloudX][y][cloudZ] = 5;
+      printf("HERE\n");
    }
+
 }
 
 
