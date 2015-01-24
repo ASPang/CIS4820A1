@@ -116,21 +116,18 @@ void collisionResponse() {
    if (objY < 49) {
       if (world[objX][(int)y*(-1)][objZ] != 0) { // || world[objX2][objY2][objZ2] != 0) {
          printf("YOU'RE IN A CUBE collsionResponse cube=%d,%d,%d (%d)\n", objX,(int)y*(-1),objZ, world[objX][(int)y*(-1)][objZ]);
-         getOldViewPosition(&oldX, &oldY, &oldZ);
-         setViewPosition(oldX, oldY, oldZ);
-         
-         //if (world[objX2][objY2][objZ2] != 0) {
-         //printf("YOU'RE IN A CUBE collsionResponse2\n");
-         //getOldViewPosition(&oldX, &oldY, &oldZ);
-         //setViewPosition(oldX, oldY, oldZ);
-         //}
-      
-         /*Determine if the cube can be climbed*/
-         //climbCube(objX, objY, objZ); //, oldX, oldY, oldZ);
-         collisionFlag = 1;   //Set the collision flag
+
+         if (secondCube(objX, objY, objZ) == 1) {
+printf("HERE1 \n");
+            setViewPosition(x, (y) - 1, z);
+         }
+         else {
+            getOldViewPosition(&oldX, &oldY, &oldZ);
+            setViewPosition(oldX, oldY, oldZ);
+         }
       }
       /*Determine if current position you're inside a cube*/
-     // else {
+
          printf(">>> vpx=%d, vpy=%d \n", vpLocValueX, vpLocValueZ);
          if (vpLocValueX >= 7) {
             objX += 1;
@@ -144,26 +141,51 @@ void collisionResponse() {
          printf(">>>>YOU'RE IN A CUBE collsionResponse2 cube=%d,%d,%d (%d)\n", objX2,(int)y*(-1),objZ2, world[objX2][(int)y*(-1)][objZ2]);
          if (world[objX2][(int)y*(-1)][objZ2] != 0) {
             printf("YOU'RE IN A CUBE collsionResponse222\n");
-            getOldViewPosition(&oldX, &oldY, &oldZ);
+            /*getOldViewPosition(&oldX, &oldY, &oldZ);
             setViewPosition(oldX, oldY, oldZ);
             
-            collisionFlag = 1;   //Set the collision flag
+            collisionFlag = 1;   //Set the collision flag*/
+
+         if (secondCube(objX, objY, objZ) == 1) {
+            //setViewPosition((((float)cX)+0.5)*(-1), floor(y) - 1, (((float)cZ)+0.5)*(-1));
+printf("HERE2 \n");
+setViewPosition(x, (y) - 1, z);
+
+         }
+         else {
+            getOldViewPosition(&oldX, &oldY, &oldZ);
+            setViewPosition(oldX, oldY, oldZ);
+         }
+
+
          }
          
          if (world[objX][(int)y*(-1)][objZ] != 0) {
             printf("YOU'RE IN A CUBE collsionResponse233\n");
-            getOldViewPosition(&oldX, &oldY, &oldZ);
+            /*getOldViewPosition(&oldX, &oldY, &oldZ);
             setViewPosition(oldX, oldY, oldZ);
 
-            collisionFlag = 1;   //Set the collision flag
+            collisionFlag = 1;   //Set the collision flag*/
+
+            if (secondCube(objX, objY, objZ) == 1) {
+               //setViewPosition((((float)cX)+0.5)*(-1), floor(y) - 1, (((float)cZ)+0.5)*(-1));
+printf("HERE3 \n");
+setViewPosition(x, (y) - 1, z);
+
+            }
+            else {
+               getOldViewPosition(&oldX, &oldY, &oldZ);
+               setViewPosition(oldX, oldY, oldZ);
+            }
+
          }
          
-         if (collisionFlag == 1) {
+         //if (collisionFlag == 1) {
             /*Determine if the cube can be climbed*/
-            climbCube(objX, objY, objZ);
+           // climbCube(objX, objY, objZ);
             
-            collisionFlag = 0;
-         }
+            //collisionFlag = 0;
+         //}
          
       //}
       /*if (vpLocValueZ > 5 || vpLocValueZ > 5) {
@@ -177,10 +199,26 @@ void collisionResponse() {
 }
 
 int vpFirstDec(pos) {
+   
+
    return ((int)(floor( fabs( pos ) * 10 ) ) ) % 10;
 }
 
-void climbCube(int cX, int cY, int cZ) { //, float x, float y, float z) {
+int secondCube(int cX, int cY, int cZ) {
+   int cubeFront, cubeTop;
+   float x, y, z;
+   int vpLocValueX, vpLocValueZ;
+
+  getViewPosition(&x, &y, &z);
+   cubeTop = world[cX][(int)(y-1)*(-1)][cZ];
+
+   if (cubeTop == 0) {
+      return 1;
+   }
+   return 0;
+}
+
+int climbCube(int cX, int cY, int cZ) { //, float x, float y, float z) {
    int cubeFront, cubeTop;
    float x, y, z;
    int vpLocValueX, vpLocValueZ;
@@ -209,8 +247,20 @@ void climbCube(int cX, int cY, int cZ) { //, float x, float y, float z) {
    /*cX -= 0.5;
    cY -= 0.5;*/
    if (cubeTop == 0) {
-      setViewPosition((((float)cX)+0.5)*(-1), y - 1.2, (((float)cZ)+0.5)*(-1));
+printf("---Actual new pos %f, %f, %f \n", (((float)cX)+0.5)*(-1), y - 1.2, (((float)cZ)+0.5)*(-1));
+      getViewPosition(&x, &y, &z);
+
+      setViewPosition(x-0.01, y, z+0.01);
+
+
+      getViewPosition(&x, &y, &z);
+
+      setViewPosition((((float)cX)+0.5)*(-1), floor(y) - 1, (((float)cZ)+0.5)*(-1));
+//setViewPosition(x, y - 1.2, z);
+
    }
+
+   return 0;
 }
 
 void gameWall() {
@@ -337,7 +387,7 @@ void gravity() {
     
     if (world[objX][objY][objZ] == 0) {
         setViewPosition(x, y + 0.1, z); 
-        collisionResponse();
+        //collisionResponse();
     }
 }
 
