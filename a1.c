@@ -79,7 +79,7 @@ void collisionResponse() {
    float oldX, oldY, oldZ; //Old viewpoint coordinates
    float spaceBuffer = -0.2, spaceBuffer2 = 0.5;   //VP buffer space
    
-   int vpLocValueX, vpLocValueZ;
+   int vpLocValueX, vpLocValueZ; //tenth digit in the decimal number for the view position
    int objX, objY, objZ; //Object coordinate check #1
    int objX2 = 0, objY2 = 0, objZ2 = 0; //Object coordinate check #2
    
@@ -100,148 +100,70 @@ void collisionResponse() {
    objY2 = (int)(y) * (- 1);
    objZ2 = (int)(z) * (- 1);
    
-   /*objX2 = (int)((x - spaceBuffer2) * -1) - 1;
-   objY2 = (int)((y - spaceBuffer2) * -1) -1;
-   objZ2 = (int)((z - spaceBuffer2) * -1) - 1;
-
-   vpLocValueX = ( (int)(floor( fabs( x ) * 10 ) ) ) % 10;
-   vpLocValueZ = ( (int)(floor( fabs( x ) * 10 ) ) ) % 10;*/
-   
+   /*Get the first decimal place for x and z*/
    vpLocValueX = ( (int)(floor( fabs( x ) * 10 ) ) ) % 10;
    vpLocValueZ = ( (int)(floor( fabs( z ) * 10 ) ) ) % 10;
 
-   printf("current location = %f, %f, %f  collsionResponse()\n", x, y, z);     //TESTING!!!!!
-   printf("---obj = %d,%d,%d ---obj2 obj = %d,%d,%d --- world=%d and possible world=%d\n", objX, objY, objZ, objX2, objY2, objZ2, world[objX][objY][objZ], world[objX2][objY2][objZ2]);
-   
-   if (objY < 49) {
-      if (world[objX][(int)y*(-1)][objZ] != 0) { // || world[objX2][objY2][objZ2] != 0) {
-         printf("YOU'RE IN A CUBE collsionResponse cube=%d,%d,%d (%d)\n", objX,(int)y*(-1),objZ, world[objX][(int)y*(-1)][objZ]);
-
-         if (secondCube(objX, objY, objZ) == 1) {
-printf("HERE1 \n");
+   /*Determine if the view points is below WORLDY height value*/
+   if (objY < (WORLDY-1)) {
+      /*Determine if there's a cube in front of the vp*/
+      if (world[objX][(int)y*(-1)][objZ] != 0) { 
+         /*Check the height of the cube wall*/
+         if (climbCube(objX, objY, objZ) == 1) {
+            /*Climb up the cube*/
             setViewPosition(x, (y) - 1, z);
          }
          else {
+            /*Don't move*/
             getOldViewPosition(&oldX, &oldY, &oldZ);
             setViewPosition(oldX, oldY, oldZ);
          }
       }
+      
       /*Determine if current position you're inside a cube*/
-
-         printf(">>> vpx=%d, vpy=%d \n", vpLocValueX, vpLocValueZ);
-         if (vpLocValueX >= 7) {
-            objX += 1;
-            objX2 += 1;
+      if (vpLocValueX >= 7) {
+         objX += 1;
+         objX2 += 1;
+      }
+      
+      if (vpLocValueZ >= 7) {
+         objZ += 1;
+         objZ2 += 1;
+      }
+      
+      /*Determine if there's a cube in front of the vp*/
+      if (world[objX2][(int)y*(-1)][objZ2] != 0 || world[objX][(int)y*(-1)][objZ] != 0) {
+         if (climbCube(objX, objY, objZ) == 1) {
+            /*Climb up the cube*/
+            setViewPosition(x-0.01, (y) - 1.2, z);
          }
-         
-         if (vpLocValueZ >= 7) {
-            objZ += 1;
-            objZ2 += 1;
-         }
-         printf(">>>>YOU'RE IN A CUBE collsionResponse2 cube=%d,%d,%d (%d)\n", objX2,(int)y*(-1),objZ2, world[objX2][(int)y*(-1)][objZ2]);
-         if (world[objX2][(int)y*(-1)][objZ2] != 0 || world[objX][(int)y*(-1)][objZ] != 0) {
-            printf("YOU'RE IN A CUBE collsionResponse233\n");
-            /*getOldViewPosition(&oldX, &oldY, &oldZ);
-            setViewPosition(oldX, oldY, oldZ);
-
-            collisionFlag = 1;   //Set the collision flag*/
-
-            if (secondCube(objX, objY, objZ) == 1) {
-               //setViewPosition((((float)cX)+0.5)*(-1), floor(y) - 1, (((float)cZ)+0.5)*(-1));
-printf("HERE3 \n");
-setViewPosition(x-0.01, (y) - 1.2, z);
-
-            }
-            else {
-               getOldViewPosition(&oldX, &oldY, &oldZ);
-               setViewPosition(oldX, oldY, oldZ);
-            }
-
-         }
-         
-         //if (collisionFlag == 1) {
-            /*Determine if the cube can be climbed*/
-           // climbCube(objX, objY, objZ);
-            
-            //collisionFlag = 0;
-         //}
-         
-      //}
-      /*if (vpLocValueZ > 5 || vpLocValueZ > 5) {
-         printf("YOU'RE IN A CUBE collsionResponse2\n");
-         if(world[objX2][objY2][objZ2] != 0) {
+         else {
+            /*Don't move*/
             getOldViewPosition(&oldX, &oldY, &oldZ);
             setViewPosition(oldX, oldY, oldZ);
          }
-      }*/
+      }
    }  
 }
 
-int vpFirstDec(pos) {
-   
-
-   return ((int)(floor( fabs( pos ) * 10 ) ) ) % 10;
-}
-
-int secondCube(int cX, int cY, int cZ) {
-   int cubeFront, cubeTop;
+/*Determine if there's a cube stacked on top*/
+int climbCube(int cX, int cY, int cZ) {
+   int cubeTop;
    float x, y, z;
-   int vpLocValueX, vpLocValueZ;
 
-  getViewPosition(&x, &y, &z);
-   cubeTop = world[cX][(int)(y-1)*(-1)][cZ];
+   getViewPosition(&x, &y, &z);  //Get the current VP position
+   cubeTop = world[cX][(int)(y-1)*(-1)][cZ]; //Get the block information in front of VP
 
+   /*There's no cube at the top*/
    if (cubeTop == 0) {
       return 1;
    }
+   
+   /*There's a cube stacked on top*/
    return 0;
 }
 
-int climbCube(int cX, int cY, int cZ) { //, float x, float y, float z) {
-   int cubeFront, cubeTop;
-   float x, y, z;
-   int vpLocValueX, vpLocValueZ;
-   
-   getViewPosition(&x, &y, &z);
-   
-   cubeTop = world[cX][(int)(y-1)*(-1)][cZ];
-   
-   printf("y+1 = %d, %d, %d, xyz = %f, %f, %f,,,, cubeTop = %d \n", cX, cY+1, cZ, x, y+1.1, z, cubeTop);
-   printf("0000 old xyz = %f, %f, %f,,,, cubeTop = %d \n", x, y, z, cubeTop);
-   
-   /*Determine if VP is at the very edge of the cube*/
-   vpLocValueX = ( (int)(floor( fabs( x ) * 10 ) ) ) % 10;
-   vpLocValueZ = ( (int)(floor( fabs( z ) * 10 ) ) ) % 10;
-   
-   if (vpLocValueX < 1) {
-      //cX += 0.5;
-   }
-   
-   if (vpLocValueZ < 1) {
-      //cZ += 0.5;
-   }
-   
-   printf("nnnn Newpos xyz = %f, %f, %f,,,, cubeTop = %d \n", x, y-1.2, z, cubeTop);
-   /*Determine if there's another cube on top of the colladed one*/
-   /*cX -= 0.5;
-   cY -= 0.5;*/
-   if (cubeTop == 0) {
-printf("---Actual new pos %f, %f, %f \n", (((float)cX)+0.5)*(-1), y - 1.2, (((float)cZ)+0.5)*(-1));
-      getViewPosition(&x, &y, &z);
-
-      setViewPosition(x-0.01, y, z+0.01);
-
-
-      getViewPosition(&x, &y, &z);
-
-      setViewPosition((((float)cX)+0.5)*(-1), floor(y) - 1, (((float)cZ)+0.5)*(-1));
-//setViewPosition(x, y - 1.2, z);
-
-   }
-
-   return 0;
-}
-
+/*Prevents the user from going through the edge of the game wall (north, south, east, west)*/
 void gameWall() {
     float x, y, z; //Viewpoint coordinates
     float spaceBuffer = 0.5;   //VP buffer space
