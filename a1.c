@@ -139,28 +139,7 @@ printf("HERE1 \n");
             objZ2 += 1;
          }
          printf(">>>>YOU'RE IN A CUBE collsionResponse2 cube=%d,%d,%d (%d)\n", objX2,(int)y*(-1),objZ2, world[objX2][(int)y*(-1)][objZ2]);
-         if (world[objX2][(int)y*(-1)][objZ2] != 0) {
-            printf("YOU'RE IN A CUBE collsionResponse222\n");
-            /*getOldViewPosition(&oldX, &oldY, &oldZ);
-            setViewPosition(oldX, oldY, oldZ);
-            
-            collisionFlag = 1;   //Set the collision flag*/
-
-         if (secondCube(objX, objY, objZ) == 1) {
-            //setViewPosition((((float)cX)+0.5)*(-1), floor(y) - 1, (((float)cZ)+0.5)*(-1));
-printf("HERE2 \n");
-setViewPosition(x, (y) - 1, z);
-
-         }
-         else {
-            getOldViewPosition(&oldX, &oldY, &oldZ);
-            setViewPosition(oldX, oldY, oldZ);
-         }
-
-
-         }
-         
-         if (world[objX][(int)y*(-1)][objZ] != 0) {
+         if (world[objX2][(int)y*(-1)][objZ2] != 0 || world[objX][(int)y*(-1)][objZ] != 0) {
             printf("YOU'RE IN A CUBE collsionResponse233\n");
             /*getOldViewPosition(&oldX, &oldY, &oldZ);
             setViewPosition(oldX, oldY, oldZ);
@@ -170,7 +149,7 @@ setViewPosition(x, (y) - 1, z);
             if (secondCube(objX, objY, objZ) == 1) {
                //setViewPosition((((float)cX)+0.5)*(-1), floor(y) - 1, (((float)cZ)+0.5)*(-1));
 printf("HERE3 \n");
-setViewPosition(x, (y) - 1, z);
+setViewPosition(x-0.01, (y) - 1.2, z);
 
             }
             else {
@@ -352,13 +331,13 @@ void update() {
     /* end testworld animation */
    } else {
 	/* your code goes here */
-      /**TESTING!!!!!!!!!!!**/
+      /**TESTING!!!!!!!!!!!**
       static int startflag2 = 0;
       
       if (startflag2 == 0) {
          setViewPosition(-53, -3, -50);
          startflag2 = 1;
-      }
+      }*/
       
       /*Determine if the fly control is on or off*/
       if (flycontrol == 0) {
@@ -367,7 +346,7 @@ void update() {
       } 
 
       /*Move the clouds*/
-      //moveCloud();      //TESTING!!!!!!!!!!---Disabled in for windows environment testing
+      moveCloud();      //TESTING!!!!!!!!!!---Disabled in for windows environment testing
       
    }
 }
@@ -386,9 +365,56 @@ void gravity() {
     objZ = (int)(z - spaceBuffer) * -1;
     
     if (world[objX][objY][objZ] == 0) {
-        setViewPosition(x, y + 0.1, z); 
+        //setViewPosition(x, y + 0.1, z); 
         //collisionResponse();
+        avoidCubeEdge();
     }
+
+}
+
+void avoidCubeEdge() {
+    float x, y, z;   //Viewpoints 0=x,1=y,2=z    
+    float oldX, oldY, oldZ; //Old viewpoint coordinates
+    float spaceBuffer = -0.2;   //VP buffer space
+    int objX, objY, objZ; //Object coordinate check #1
+    
+    /*Convert location to an integer*/
+    getViewPosition(&x, &y, &z);
+    getOldViewPosition(&oldX, &oldY, &oldZ);
+
+   float diffX, diffY, diffZ;
+
+   
+
+   /*Determine if VP is at the very edge of the cube*/
+   int vpLocValueX, vpLocValueZ;
+   vpLocValueX = ( (int)(floor( fabs( x ) * 10 ) ) ) % 10;
+   vpLocValueZ = ( (int)(floor( fabs( z ) * 10 ) ) ) % 10;
+   
+   if (vpLocValueX < 3 || vpLocValueX > 6) {
+      diffX = oldX - x;
+     
+if (diffX > 0) {
+x -= 0.2;   
+}
+else if (diffX <0) {
+x += 0.2;
+}
+
+   }
+
+if (vpLocValueZ < 3 || vpLocValueZ > 6) {
+      diffZ = oldZ - z;
+     
+if (diffZ > 0) {
+z -= 0.2;   
+}
+else if (diffZ < 0) {
+z += 0.2;
+}
+   }
+
+setViewPosition(x, y + 0.1, z); 
 }
 
 
@@ -487,15 +513,16 @@ void waterFlow() {
 
 /*Add mountain to the game world*/
 void moutainTops() {
-   /*Use Perline noise to create a mountain tops*/
-   //perlinValue();   
-   
-   int colour = 3;
+int colour = 3;
    world[50][1][50] = colour;   //TESTING!!!
    world[51][1][50] = colour;   //TESTING!!!
    world[50][2][50] = 2;   //TESTING!!!
    world[51][1][51] = colour;   //TESTING!!!
    world[50][1][51] = colour;   //TESTING!!!
+
+   /*Use Perline noise to create a mountain tops*/
+   perlinValue();   
+   
 }
 
 
@@ -592,8 +619,8 @@ void fillMountain(int x, int y, int z) {
    
    /*Top of the mountain terrain*/
    world[x][y][z] = 1;
-   
-   /*Build the mountain bottom up*/
+
+     /*Build the mountain bottom up*/
    for (i = 1; i < y; i++) {
       world[x][i][z] = 1;
    }
