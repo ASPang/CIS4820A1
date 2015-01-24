@@ -77,7 +77,9 @@ void collisionResponse() {
    int i;  //Loop counter
    float x, y, z; //Viewpoint coordinates
    float oldX, oldY, oldZ; //Old viewpoint coordinates
-   float spaceBuffer = -0.2;   //VP buffer space
+   float spaceBuffer = -0.2, spaceBuffer2 = 0.5;   //VP buffer space
+   
+   int vpLocValueX, vpLocValueZ;
    int objX, objY, objZ; //Object coordinate check #1
    int objX2 = 0, objY2 = 0, objZ2 = 0; //Object coordinate check #2
 
@@ -92,27 +94,49 @@ void collisionResponse() {
    objY = (int)(y - spaceBuffer) * -1;
    objZ = (int)(z - spaceBuffer) * -1;
 
-   objX2 = (int)(x + spaceBuffer) * -1;
-   //objY2 = (int)(y + spaceBuffer) * -1;
-   objZ2 = (int)(z + spaceBuffer) * -1;
+   objX2 = (int)((x - spaceBuffer2) * -1) - 1;
+   objY2 = (int)((y - spaceBuffer2) * -1) -1;
+   objZ2 = (int)((z - spaceBuffer2) * -1) - 1;
 
+   vpLocValueX = ( (int)(floor( fabs( x ) * 10 ) ) ) % 10;
+   vpLocValueZ = ( (int)(floor( fabs( x ) * 10 ) ) ) % 10;
 
    printf("current location = %f, %f, %f  collsionResponse()\n", x, y, z);     //TESTING!!!!!
    printf("---obj = %d,%d,%d ---obj2 obj = %d,%d,%d --- world=%d and possible world=%d\n", objX, objY, objZ, objX2, objY2, objZ2, world[objX][objY][objZ], world[objX2][objY2][objZ2]);
+   
    if (objY < 49) {
       if (world[objX][(int)y*(-1)][objZ] != 0) { // || world[objX2][objY2][objZ2] != 0) {
          printf("YOU'RE IN A CUBE collsionResponse\n");
          getOldViewPosition(&oldX, &oldY, &oldZ);
          setViewPosition(oldX, oldY, oldZ);
-      }
-      else {
-         if(world[objX2][objY2][objZ2] != 0) {
          
-         }
+         /*Determine if the cube can be climbed*/
+         climbCube(objX, objY, objZ); //, oldX, oldY, oldZ);
       }
+      /*if (vpLocValueZ > 5 || vpLocValueZ > 5) {
+         printf("YOU'RE IN A CUBE collsionResponse2\n");
+         if(world[objX2][objY2][objZ2] != 0) {
+            getOldViewPosition(&oldX, &oldY, &oldZ);
+            setViewPosition(oldX, oldY, oldZ);
+         }
+      }*/
+   }  
+}
+
+void climbCube(int cX, int cY, int cZ) { //, float x, float y, float z) {
+   int cubeFront, cubeTop;
+   float x, y, z;
+   
+   getViewPosition(&x, &y, &z);
+   
+   cubeTop = world[cX][(int)(y-1)*(-1)][cZ];
+   
+   printf("y+1 = %d, %d, %d, xyz = %f, %f, %f,,,, cubeTop = %d \n", cX, cY+1, cZ, x, y+1.1, z, cubeTop);
+   
+   /*Determine if there's another cube on top of the colladed one*/
+   if (cubeTop == 0) {
+      setViewPosition(x, y - 1.2, z);
    }
-   
-   
 }
 
 void gameWall() {
@@ -127,23 +151,18 @@ void gameWall() {
     
     /*Get the VP current location*/
     getViewPosition(&x, &y, &z);
-    printf("%f and z= %f -- xmax=%f zmax=%f min= %f\n", x, z, xMax, zMax, min);     //TESTING!!!!!
+    
     /*Determine if VP is at the game wall*/
     if (x >= min) {
-        //setViewPosition(x, downY, z);
-        printf("xmin boarder reached %f \n", x);    //TESTING!!!!!
         setViewPosition(min, y, z);
     }
     else if (x <= xMax) {
-        printf("xMax boarder reached %f \n", x);    //TESTING!!!!!
         setViewPosition(xMax, y, z);
     }
     else if (z >= min) {
-        printf("ymin boarder reached %f \n", z);    //TESTING!!!!!
         setViewPosition(x, y, min);
     }
     else if (z <= zMax) {
-        printf("ymax boarder reached %f \n", z);    //TESTING!!!!!
         setViewPosition(x, y, zMax);
     }
 }
@@ -209,6 +228,14 @@ void update() {
     /* end testworld animation */
    } else {
 	/* your code goes here */
+      /**TESTING!!!!!!!!!!!**/
+      static int startflag2 = 0;
+      
+      if (startflag2 == 0) {
+         setViewPosition(-53, -3, -50);
+         startflag2 = 1;
+      }
+      
       /*Determine if the fly control is on or off*/
       if (flycontrol == 0) {
          gravity();
@@ -217,6 +244,7 @@ void update() {
 
       /*Move the clouds*/
       //moveCloud();      //TESTING!!!!!!!!!!---Disabled in for windows environment testing
+      
    }
 }
 
@@ -234,7 +262,7 @@ void gravity() {
     objZ = (int)(z - spaceBuffer) * -1;
     
     if (world[objX][objY][objZ] == 0) {
-        setViewPosition(x, y + 0.1, z);   //TESTING - Gravity should be 0.1
+        setViewPosition(x, y + 0.1, z); 
     }
 }
 
@@ -335,7 +363,14 @@ void waterFlow() {
 /*Add mountain to the game world*/
 void moutainTops() {
    /*Use Perline noise to create a mountain tops*/
-   perlinValue();   
+   //perlinValue();   
+   
+   int colour = 3;
+   world[50][1][50] = colour;   //TESTING!!!
+   world[51][1][50] = colour;   //TESTING!!!
+   world[50][2][50] = 2;   //TESTING!!!
+   world[51][1][51] = colour;   //TESTING!!!
+   world[50][1][51] = colour;   //TESTING!!!
 }
 
 
