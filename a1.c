@@ -276,7 +276,7 @@ void gravity() {
    objZ = (int)(z - spaceBuffer) * -1;
 
    /*Determine if there's an object based on vp current position*/
-   if (world[objX][objY][objZ] == 0) {
+   if (world[objX][objY][objZ] == 0 || y < ((WORLDY-1)*(-1))) {
       avoidCubeEdge();
    }
 }
