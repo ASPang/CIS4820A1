@@ -74,38 +74,45 @@ extern void tree(float, float, float, float, float, float, int);
 	/* note that the world coordinates returned from getViewPosition()
 	   will be the negative value of the array indices */
 void collisionResponse() {
-    int i;  //Loop counter
-    float x, y, z; //Viewpoint coordinates
-    float oldX, oldY, oldZ; //Old viewpoint coordinates
-    float spaceBuffer = -0.2;   //VP buffer space
-    int objX, objY, objZ; //Object coordinate check #1
-    int objX2 = 0, objY2 = 0, objZ2 = 0; //Object coordinate check #2
-    
-	/* your collision code goes here */
-    gameWall(); //Determine if the player is at the edge of the world
-    
-    
-    /*Convert location to an integer*/
-    getViewPosition(&x, &y, &z);
-    
-    objX = (int)(x - spaceBuffer) * -1;
-    objY = (int)(y - spaceBuffer) * -1;
-    objZ = (int)(z - spaceBuffer) * -1;
-    
-    //objX2 = (int)(x + spaceBuffer) * -1;
-    //objY2 = (int)(y + spaceBuffer) * -1;
-    //objZ2 = (int)(z + spaceBuffer) * -1;
+   int i;  //Loop counter
+   float x, y, z; //Viewpoint coordinates
+   float oldX, oldY, oldZ; //Old viewpoint coordinates
+   float spaceBuffer = -0.2;   //VP buffer space
+   int objX, objY, objZ; //Object coordinate check #1
+   int objX2 = 0, objY2 = 0, objZ2 = 0; //Object coordinate check #2
 
-    
-    printf("current location = %f, %f, %f  collsionResponse()\n", x, y, z);     //TESTING!!!!!
-    printf("---obj = %d,%d,%d ---obj2 obj = %d,%d,%d --- world=%d and possible world=%d\n", objX, objY, objZ, objX2, objY2, objZ2, world[objX][objY][objZ], world[objX2][objY2][objZ2]);
+   /* your collision code goes here */
+   gameWall(); //Determine if the player is at the edge of the world
 
-    
-    if (world[objX][(int)y*(-1)][objZ] != 0) { // || world[objX2][objY2][objZ2] != 0) {
-        printf("YOU'RE IN A CUBE collsionResponse\n");
-        getOldViewPosition(&oldX, &oldY, &oldZ);
-        setViewPosition(oldX, oldY, oldZ);
-    }
+
+   /*Convert location to an integer*/
+   getViewPosition(&x, &y, &z);
+
+   objX = (int)(x - spaceBuffer) * -1;
+   objY = (int)(y - spaceBuffer) * -1;
+   objZ = (int)(z - spaceBuffer) * -1;
+
+   objX2 = (int)(x + spaceBuffer) * -1;
+   //objY2 = (int)(y + spaceBuffer) * -1;
+   objZ2 = (int)(z + spaceBuffer) * -1;
+
+
+   printf("current location = %f, %f, %f  collsionResponse()\n", x, y, z);     //TESTING!!!!!
+   printf("---obj = %d,%d,%d ---obj2 obj = %d,%d,%d --- world=%d and possible world=%d\n", objX, objY, objZ, objX2, objY2, objZ2, world[objX][objY][objZ], world[objX2][objY2][objZ2]);
+   if (objY < 49) {
+      if (world[objX][(int)y*(-1)][objZ] != 0) { // || world[objX2][objY2][objZ2] != 0) {
+         printf("YOU'RE IN A CUBE collsionResponse\n");
+         getOldViewPosition(&oldX, &oldY, &oldZ);
+         setViewPosition(oldX, oldY, oldZ);
+      }
+      else {
+         if(world[objX2][objY2][objZ2] != 0) {
+         
+         }
+      }
+   }
+   
+   
 }
 
 void gameWall() {
@@ -209,7 +216,7 @@ void update() {
       } 
 
       /*Move the clouds*/
-      moveCloud();      
+      //moveCloud();      //TESTING!!!!!!!!!!---Disabled in for windows environment testing
    }
 }
 
@@ -305,6 +312,7 @@ void landscape() {
    cloudFloat(); 
 }
 
+/*Create a floor in the game world*/
 void grassLand() {
    int x, z, y = 0;      //Loop counter
       
@@ -313,14 +321,9 @@ void grassLand() {
          world[x][0][z] = 1;
       }
    }
-
-    for (x = 0; x < WORLDX; x++) {
-        for (z = 0; z < WORLDZ; z++) {
-            //world[x][49][z] = 3;
-        }
-    }
 }
 
+/*Add a river along with the edge of the game world*/
 void waterFlow() {
    int x, z = 0, y = 0;      //Loop counter
 
@@ -329,33 +332,10 @@ void waterFlow() {
    }
 }
 
+/*Add mountain to the game world*/
 void moutainTops() {
-   int x=50, z = 50, y = 1;      //Coordinates
-   int mount = 3;
-
-   /*world[x][y][z] = mount;
-   world[x+1][y][z] = mount;
-   world[x+2][y][z] = mount;
-    world[x-1][y][z] = mount;
-    world[x-2][y][z] = mount;
-    
-    world[x][y][z] = mount;
-    world[x][y][z-1] = mount;
-    world[x][y][z-2] = mount;
-    world[x][y][z+1] = mount;
-    world[x][y][z+2] = mount;
-    
-    
-    world[x+1][y][z-1] = mount;
-    world[x+2][y][z-2] = mount;
-    world[x-1][y][z+1] = mount;*/
-    world[x-2][y][z+2] = mount;
-
-
-
-    int i = 0;
-    perlinValue();   
-
+   /*Use Perline noise to create a mountain tops*/
+   perlinValue();   
 }
 
 
@@ -365,10 +345,12 @@ void moutainTops() {
 void perlinValue() {
    int x, z;
    int i, j, p[WORLDX], nSwap;
-   float gx[WORLDX], gy[WORLDX];
-
    int SIZE = WORLDX;
-
+   
+   float gx[WORLDX], gy[WORLDX];
+   float perX, perZ;
+  
+   /*Random Generator Seed*/
    srand(time(NULL));
 
    // Initialize the permutation table
@@ -389,16 +371,10 @@ void perlinValue() {
       gy[i] = (float)(rand())/(RAND_MAX/2) - 1.0f;
    }
 
-   float perX, perZ;
-
-    for (x = 0; x < (WORLDX - 1); x++) {
-
+   for (x = 0; x < (WORLDX - 1); x++) {
       for (z = 0; z < (WORLDZ - 1); z++) {
-         perX = x / 13.5; //(x / 33.0); // / 23;
-         perZ = z / 13.5; //(z / 33.0); // 23;
-
-         //x /= 20.0;
-         //z /= 20.0;
+         perX = x / 13.5; 
+         perZ = z / 13.5; 
 
          // Compute the integer positions of the four surrounding points
          int qx0 = (int)floorf(perX);
