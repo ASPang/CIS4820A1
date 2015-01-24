@@ -88,7 +88,6 @@ void collisionResponse() {
    /* your collision code goes here */
    gameWall(); //Determine if the player is at the edge of the world
 
-
    /*Convert location to an integer*/
    getViewPosition(&x, &y, &z);
 
@@ -165,31 +164,31 @@ int climbCube(int cX, int cY, int cZ) {
 
 /*Prevents the user from going through the edge of the game wall (north, south, east, west)*/
 void gameWall() {
-    float x, y, z; //Viewpoint coordinates
-    float spaceBuffer = 0.5;   //VP buffer space
-    float xMax, zMax, min;  //Game wall boarder
-    
-    /*Calculate the game wall with 0.2 space buffer and covert it to negative value*/
-    xMax = -(WORLDX - spaceBuffer);
-    zMax = -(WORLDZ - spaceBuffer);
-    min = -spaceBuffer;
-    
-    /*Get the VP current location*/
-    getViewPosition(&x, &y, &z);
-    
-    /*Determine if VP is at the game wall*/
-    if (x >= min) {
-        setViewPosition(min, y, z);
-    }
-    else if (x <= xMax) {
-        setViewPosition(xMax, y, z);
-    }
-    else if (z >= min) {
-        setViewPosition(x, y, min);
-    }
-    else if (z <= zMax) {
-        setViewPosition(x, y, zMax);
-    }
+   float x, y, z; //Viewpoint coordinates
+   float spaceBuffer = 0.5;   //VP buffer space
+   float xMax, zMax, min;  //Game wall boarder
+
+   /*Calculate the game wall with 0.2 space buffer and covert it to negative value*/
+   xMax = -(WORLDX - spaceBuffer);
+   zMax = -(WORLDZ - spaceBuffer);
+   min = -spaceBuffer;
+
+   /*Get the VP current location*/
+   getViewPosition(&x, &y, &z);
+
+   /*Determine if VP is at the game wall*/
+   if (x >= min) {
+      setViewPosition(min, y, z);
+   }
+   else if (x <= xMax) {
+      setViewPosition(xMax, y, z);
+   }
+   else if (z >= min) {
+      setViewPosition(x, y, min);
+   }
+   else if (z <= zMax) {
+      setViewPosition(x, y, zMax);
+   }
 }
 
 
@@ -251,96 +250,87 @@ void update() {
       mob1ry += 1.0;
       if (mob1ry > 360.0) mob1ry -= 360.0;
     /* end testworld animation */
-   } else {
-	/* your code goes here */
-      /**TESTING!!!!!!!!!!!**
-      static int startflag2 = 0;
-      
-      if (startflag2 == 0) {
-         setViewPosition(-53, -3, -50);
-         startflag2 = 1;
-      }*/
-      
+   } else {      
       /*Determine if the fly control is on or off*/
       if (flycontrol == 0) {
          gravity();
-         
       } 
 
       /*Move the clouds*/
-      moveCloud();      //TESTING!!!!!!!!!!---Disabled in for windows environment testing
-      
+      moveCloud();      
    }
 }
 
+/*Pulls the view point(camera) down the gameworld*/
 void gravity() {
    float x, y, z;   //Viewpoints 0=x,1=y,2=z    
-    float oldX, oldY, oldZ; //Old viewpoint coordinates
-    float spaceBuffer = -0.2;   //VP buffer space
-    int objX, objY, objZ; //Object coordinate check #1
-    
-    /*Convert location to an integer*/
-    getViewPosition(&x, &y, &z);
-    
-    objX = (int)(x - spaceBuffer) * -1;
-    objY = (int)(y - spaceBuffer) * -1;
-    objZ = (int)(z - spaceBuffer) * -1;
-    
-    if (world[objX][objY][objZ] == 0) {
-        //setViewPosition(x, y + 0.1, z); 
-        //collisionResponse();
-        avoidCubeEdge();
-    }
+   float oldX, oldY, oldZ; //Old viewpoint coordinates
+   float spaceBuffer = -0.2;   //VP buffer space
+   int objX, objY, objZ; //Object coordinate check #1
 
+   /*Convert location to an integer*/
+   getViewPosition(&x, &y, &z);
+
+   objX = (int)(x - spaceBuffer) * -1;
+   objY = (int)(y - spaceBuffer) * -1;
+   objZ = (int)(z - spaceBuffer) * -1;
+
+   /*Determine if there's an object based on vp current position*/
+   if (world[objX][objY][objZ] == 0) {
+      avoidCubeEdge();
+   }
 }
 
+/*Determine which way the user is jumping off the edge of a cube*/
 void avoidCubeEdge() {
-    float x, y, z;   //Viewpoints 0=x,1=y,2=z    
-    float oldX, oldY, oldZ; //Old viewpoint coordinates
-    float spaceBuffer = -0.2;   //VP buffer space
-    int objX, objY, objZ; //Object coordinate check #1
-    
-    /*Convert location to an integer*/
-    getViewPosition(&x, &y, &z);
-    getOldViewPosition(&oldX, &oldY, &oldZ);
+   float x, y, z;   //New Viewpoint coordinate
+   float oldX, oldY, oldZ; //Old viewpoint coordinates
+   float diffX, diffY, diffZ;   //Stores the difference of the old and new coordinate
 
-   float diffX, diffY, diffZ;
+   int objX, objY, objZ; //Object coordinate check #1
+   int vpLocValueX, vpLocValueZ;   //Decimal place of vp position
 
-   
+   /*Convert location to an integer*/
+   getViewPosition(&x, &y, &z);
+   getOldViewPosition(&oldX, &oldY, &oldZ);
 
-   /*Determine if VP is at the very edge of the cube*/
-   int vpLocValueX, vpLocValueZ;
+   /*Determine if VP is at the very edge of the cube*/   
    vpLocValueX = ( (int)(floor( fabs( x ) * 10 ) ) ) % 10;
    vpLocValueZ = ( (int)(floor( fabs( z ) * 10 ) ) ) % 10;
    
+   /*Update the X axis based on the direction the user is going*/
    if (vpLocValueX < 3 || vpLocValueX > 6) {
       diffX = oldX - x;
-     
-if (diffX > 0) {
-x -= 0.2;   
-}
-else if (diffX <0) {
-x += 0.2;
-}
-
+        
+      /*User is heading East*/
+      if (diffX > 0) {
+         x -= 0.2;   
+      }
+      /*User is heading West*/
+      else if (diffX <0) {
+         x += 0.2;
+      }
    }
 
-if (vpLocValueZ < 3 || vpLocValueZ > 6) {
+   /*Update the Y axis based on the direction the user is going*/
+   if (vpLocValueZ < 3 || vpLocValueZ > 6) {
       diffZ = oldZ - z;
-     
-if (diffZ > 0) {
-z -= 0.2;   
-}
-else if (diffZ < 0) {
-z += 0.2;
-}
+      
+      /*User is heading North*/      
+      if (diffZ > 0) {
+         z -= 0.2;   
+      }
+      /*User is heading South*/      
+      else if (diffZ < 0) {
+         z += 0.2;
+      }
    }
 
-setViewPosition(x, y + 0.1, z); 
+   /*Pull the player down the world by 0.1 unit*/
+   setViewPosition(x, y + 0.1, z); 
 }
 
-
-
+/*Main function in the game which sets up the environment and how it looks*/
 int main(int argc, char** argv)
 {
 int i, j, k;
