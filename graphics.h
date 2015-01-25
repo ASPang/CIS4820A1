@@ -12,3 +12,23 @@
 GLubyte  world[WORLDX][WORLDY][WORLDZ];
 
 #define MAX_DISPLAY_LIST 500000
+
+/*Functions for CIS4820 Assignment 1*/
+int climbCube(int, int, int);
+void gameWall();
+
+void gravity();
+void avoidCubeEdge();
+
+void landscape();
+void grassLand();
+void waterFlow();
+void mountainTops();
+void perlinNoise();
+void fillMountain(int, int, int);
+
+void cloudFloat();
+void cloudShape();
+void createCloud(int, int, int, int *, int);
+void moveCloud();
+void updateCloudLoc();

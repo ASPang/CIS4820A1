@@ -401,7 +401,7 @@ int i, j, k;
 void landscape() {
    grassLand();   //Add a bottom to the world
    waterFlow();   //Add body of water
-   moutainTops(); //Add terrain
+   mountainTops(); //Add terrain
    cloudFloat();  //Add clounds
 }
 
@@ -426,9 +426,9 @@ void waterFlow() {
 }
 
 /*Add mountain to the game world*/
-void moutainTops() {
+void mountainTops() {
    /*Use Perlin noise to create a mountain terrain*/
-   perlinValue();   
+   perlinNoise();   
 }
 
 /* 
@@ -439,7 +439,7 @@ void moutainTops() {
  * Generates a table that will be used to build the landscape.
  * Using the table which is then used to build the game world terrain.
  */
-void perlinValue() {
+void perlinNoise() {
    int x, z;
    int i, j, p[WORLDX], nSwap;
    int SIZE = WORLDX;
