@@ -396,11 +396,13 @@ int i, j, k;
    return 0; 
 }
 
+
+/*Create the game world environment*/
 void landscape() {
-   grassLand();
-   waterFlow();
-   moutainTops();
-   cloudFloat(); 
+   grassLand();   //Add a bottom to the world
+   waterFlow();   //Add body of water
+   moutainTops(); //Add terrain
+   cloudFloat();  //Add clounds
 }
 
 /*Create a floor in the game world*/
@@ -425,21 +427,17 @@ void waterFlow() {
 
 /*Add mountain to the game world*/
 void moutainTops() {
-int colour = 3;
-   world[50][1][50] = colour;   //TESTING!!!
-   world[51][1][50] = colour;   //TESTING!!!
-   world[50][2][50] = 2;   //TESTING!!!
-   world[51][1][51] = colour;   //TESTING!!!
-   world[50][1][51] = colour;   //TESTING!!!
-
-   /*Use Perline noise to create a mountain tops*/
+   /*Use Perlin noise to create a mountain terrain*/
    perlinValue();   
-   
 }
 
-
-/*
+/* 
+ * Title: Generating Perlin Noise
+ * Author: Andreas Jonsson, February 2002
  * REFERENCE: http://www.angelcode.com/dev/perlin/perlin.html
+ *
+ * Generates a table that will be used to build the landscape.
+ * Using the table which is then used to build the game world terrain.
  */
 void perlinValue() {
    int x, z;
@@ -470,6 +468,7 @@ void perlinValue() {
       gy[i] = (float)(rand())/(RAND_MAX/2) - 1.0f;
    }
 
+   /*Go through the world array and build up the game world*/
    for (x = 0; x < (WORLDX - 1); x++) {
       for (z = 0; z < (WORLDZ - 1); z++) {
          perX = x / 13.5; 
@@ -519,6 +518,7 @@ void perlinValue() {
       }
    }
 }
+/*********END OF REFERENCED CODE*********/
 
 /*Fills interior of the mountain*/
 void fillMountain(int x, int y, int z) {
@@ -532,25 +532,30 @@ void fillMountain(int x, int y, int z) {
    /*Top of the mountain terrain*/
    world[x][y][z] = 1;
 
-     /*Build the mountain bottom up*/
+   /*Build the mountain bottom up*/
    for (i = 1; i < y; i++) {
       world[x][i][z] = 1;
    }
 }
 
+
+/*Generates small clouds*/
 void cloudFloat() { 
    /*Generate the clouds*/
-    int x=50, z = 50, y = 48;      //Coordinates
+   int x=50, z = 50, y = 48;      //Coordinates
    int cloud = 5;
 
+   /*placed the cloud into the world*/
    world[x][y][50] = cloud;
    world[x+1][y][50] = cloud;
    world[x+1][y][50] = cloud;
    world[0][y][50] = cloud;
 
+   /*Place larger clouds into the world*/
    cloudShape();
 }
 
+/*Generates larger shaped clouds*/
 void cloudShape() {
    /*Create the shape of the cloud*/
    int arySize;
@@ -561,6 +566,7 @@ void cloudShape() {
                       3,2,  3,1,  3,-3,  1,-4,  
                       4,1};
 
+   /*Place the type 1 cloud into the world*/
    arySize = (int)(sizeof(cloudType1)/sizeof(int));
    createCloud(50,47,47, cloudType1, arySize);
    createCloud(15,47,15, cloudType1, arySize);
@@ -575,6 +581,7 @@ void cloudShape() {
                        4,4,  4,5,  4,6,  4,9,
                        5,3,  5,4,  5,6,  5,7,  5,8};
 
+   /*Place the type 2 cloud into the world*/
    arySize = (int)(sizeof(cloudType2)/sizeof(int));
    createCloud(20,47,7, cloudType2, arySize);
    createCloud(60,47,48, cloudType2, arySize);
@@ -595,6 +602,7 @@ void cloudShape() {
                        8,6,  8,7,  8,9,  8,10,
                        9,1,  9,3,  9,6,  9,7,  9,9};
 
+   /*Place the type 3 cloud into the world*/                    
    arySize = (int)(sizeof(cloudType3)/sizeof(int));
    createCloud(30,47,57, cloudType3, arySize);
    createCloud(38,48,21, cloudType3, arySize);
@@ -604,26 +612,26 @@ void cloudShape() {
    createCloud(21,47,20, cloudType3, arySize);   
 }
 
-
 /*Puts the clouds into the world 3D array*/
 void createCloud(int x, int y, int z, int cloud[], int arySize) {
    int cloudX, cloudZ;   //Cloud information
    int i = 0;
-
+   
+   /*Place first cube that makes up the cloud into the array*/
    world[x][y][z] = 5;
 
+   /*Place second cube that makes up the cloud into the array*/
    cloudX = x + cloud[i];
    cloudZ = z + cloud[i + 1];
    world[cloudX][y][cloudZ] = 5;
 
-
+   /*Go through the rest of the cloud array that'll be placed into the world*/
    for (i = 2; i < arySize; i+=2) {
       cloudX = x + cloud[i];
       cloudZ = z + cloud[i+1];
       world[cloudX][y][cloudZ] = 5;
    }
 }
-
 
 /*Move the clouds in the game every 0.35 seconds*/
 void moveCloud() {
