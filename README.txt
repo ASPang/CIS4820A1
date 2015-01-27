@@ -1,3 +1,29 @@
+Modifications For Assignment 1 By Angela Pang
+-------------------------------------------------
+Compiling the Game
+-------------------
+Run the makefile with the following command.
+
+> make
+
+World Interactions
+-------------------
+Gravity:
+Press the F key to toggle on and it on and off. This will also toggle fly mode.
+
+Climbing: 
+Walk up to a cube wall that doesn't have another cube stacked on top. Also ensure to look at its top edge in order to climb up.
+
+Moving:
+Use the arrow keys in order to navigate through the world. 
+[W] Move forward. With the fly control on and looking up at the sky will allow you to fly up.
+[S] Move backwards.
+[A] Stride left.
+[D] Stride right.
+
+
+
+
 
 
 Readme from Assignment 1

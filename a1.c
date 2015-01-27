@@ -6,6 +6,9 @@
 /* Frames per second code taken from : */
 /* http://www.lighthouse3d.com/opengl/glut/index.php?fps */
 
+/* Perlin Noise taken from : */
+/* REFERENCE: http://www.angelcode.com/dev/perlin/perlin.html */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -549,7 +552,6 @@ void cloudFloat() {
    world[x][y][50] = cloud;
    world[x+1][y][50] = cloud;
    world[x+1][y][50] = cloud;
-   world[0][y][50] = cloud;
 
    /*Place larger clouds into the world*/
    cloudShape();
